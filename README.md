@@ -16,6 +16,7 @@ echo "Hello World" > index.html
 Push it
 Add, commit, and push your changes:
 
+# commit and push changes to github 
 git add --all
 
 git commit -m "Initial commit"
@@ -23,4 +24,5 @@ git commit -m "Initial commit"
 git push -u origin main
 
 …and you're done!
-Fire up a browser and go to https://username.github.io.
+# website to see the chart
+Fire up a browser and go to https://cryptojunnkie.github.io
