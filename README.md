@@ -13,10 +13,10 @@ cd username.github.io
 
 echo "Hello World" > index.html
 
-Push it
-Add, commit, and push your changes:
+# Push it
+# Add, commit, and push your changes
+# commit and push changes to github :
 
-# commit and push changes to github 
 git add --all
 
 git commit -m "Initial commit"

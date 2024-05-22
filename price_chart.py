@@ -45,7 +45,7 @@ for i in range(4):
     upper_channel = y_fit + (i + 1) * channel_distance
     additional_traces.append(go.Scatter(x=x, y=lower_channel, mode='lines', name=f'Buy Area {i+1}',
                                        line={'color': lower_channel_colors[i], 'width': 2, 'dash': 'solid'}))
-    additional_traces.append(go.Scatter(x=x, y=upper_channel, mode='lines', name=f'Take Profit Area {i+1}',
+    additional_traces.append(go.Scatter(x=x, y=upper_channel, mode='lines', name=f'TP {i+1}',
                                        line={'color': upper_channel_colors[i], 'width': 2, 'dash': 'solid'}))
 
     # Add annotations for lower channel levels
@@ -64,7 +64,7 @@ for i in range(4):
         go.layout.Annotation(
             x=x[-1],
             y=upper_channel,
-            text=f"Take Profit Area {i+1}",
+            text=f"TP  {i+1}",
             showarrow=False,
             font=dict(color=upper_channel_colors[i], size=12)
         )
@@ -127,4 +127,4 @@ fig.update_layout(
     xaxis_rangeslider_visible=False
 )
 
-fig.write_html('index.html')
+fig.write_html('price_chart.html')
