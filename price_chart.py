@@ -127,4 +127,4 @@ fig.update_layout(
     xaxis_rangeslider_visible=False
 )
 
-fig.write_html('price_chart.html')
+fig.write_html('index.html')
