@@ -48,7 +48,8 @@ for i in range(4):
     additional_traces.append(go.Scatter(x=x, y=upper_channel, mode='lines', name=f'TP {i+1}',
                                        line={'color': upper_channel_colors[i], 'width': 2, 'dash': 'solid'}))
 
-   
+    
+
 # Create the layout
 layout = go.Layout(
     title='Bitcoin HISTORICAL BUY & TAKE PROFIT LEVELS',
