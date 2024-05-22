@@ -48,28 +48,7 @@ for i in range(4):
     additional_traces.append(go.Scatter(x=x, y=upper_channel, mode='lines', name=f'TP {i+1}',
                                        line={'color': upper_channel_colors[i], 'width': 2, 'dash': 'solid'}))
 
-    # Add annotations for lower channel levels
-    annotations.append(
-        go.layout.Annotation(
-            x=x[-1],
-            y=lower_channel,
-            text=f"Buy Area {i+1}",
-            showarrow=False,
-            font=dict(color=lower_channel_colors[i], size=12)
-        )
-    )
-
-    # Add annotations for upper channel levels
-    annotations.append(
-        go.layout.Annotation(
-            x=x[-1],
-            y=upper_channel,
-            text=f"TP  {i+1}",
-            showarrow=False,
-            font=dict(color=upper_channel_colors[i], size=12)
-        )
-    )
-
+   
 # Create the layout
 layout = go.Layout(
     title='Bitcoin HISTORICAL BUY & TAKE PROFIT LEVELS',
