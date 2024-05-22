@@ -1,14 +1,10 @@
+# Your existing code (with both upper and lower bands)
 import numpy as np
 import matplotlib.pyplot as plt
 import yahoo_fin.stock_info as si
 import matplotlib.dates as mdates
+from matplotlib.ticker import MultipleLocator
 from datetime import date
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
-import plotly.io as pio
-
-# Set the Plotly template to use the "plotly_white" theme
-pio.templates.default = "plotly_white"
 
 # Retrieve historical BTC price data up to the current date
 btc_data = si.get_data("BTC-USD", start_date="04/19/2015", end_date=date.today(), index_as_date=True, interval="1d")
@@ -18,7 +14,7 @@ x = btc_data.index
 y = btc_data['close'].values
 
 # Perform polynomial regression fit with increased degree for smoothing
-polynomial_degree = 13  # Set the polynomial degree for regression
+polynomial_degree = 13
 p = np.polyfit(mdates.date2num(x), y, polynomial_degree)
 y_fit = np.polyval(p, mdates.date2num(x))
 
@@ -26,105 +22,66 @@ y_fit = np.polyval(p, mdates.date2num(x))
 price_high = np.max(y_fit)
 price_low = np.min(y_fit)
 
-# Create the Plotly traces
-trace1 = go.Scatter(x=x, y=y, mode='lines', name='BTC Price', line={'color': 'black', 'width': 0.75})
-trace2 = go.Scatter(x=x, y=y_fit, mode='lines', name='Smoothed Polynomial Regression Curve', line={'color': 'red', 'width': 2})
+# Define distinct color palettes for the lines using RGB colors
+colors = [(0.6, 0.3, 0.8), (0.1, 0.5, 0.9), (0.4, 0.6, 0.2), (0.9, 0.7, 0.1),
+          (0.7, 0.2, 0.5), (0.3, 0.8, 0.6), (0.8, 0.5, 0.1), (0.2, 0.4, 0.7)]
 
-# Create the additional channels
-additional_traces = []
-channel_distance = 5000  # $5,000 distance between channels
+# Plot the original BTC price data, polynomial regression curve, and the bands
+fig, ax = plt.subplots(figsize=(12, 6))
 
-# Lower channel and upper channel color palettes
-lower_channel_colors = ['#F1C40F', '#2ECC71', '#3498DB', '#9B59B6']
-upper_channel_colors = ['#F39C12', '#16A085', '#8E44AD', '#E74C3C']
-
-# Add annotations for each level
-annotations = []
+# Plot lines below and above the polynomial regression curve
 for i in range(4):
-    lower_channel = y_fit - (i + 1) * channel_distance
-    upper_channel = y_fit + (i + 1) * channel_distance
-    additional_traces.append(go.Scatter(x=x, y=lower_channel, mode='lines', name=f'Buy Area {i+1}',
-                                       line={'color': lower_channel_colors[i], 'width': 2, 'dash': 'solid'}))
-    additional_traces.append(go.Scatter(x=x, y=upper_channel, mode='lines', name=f'Take Profit Area {i+1}',
-                                       line={'color': upper_channel_colors[i], 'width': 2, 'dash': 'solid'}))
+    distance_below = 0.07 * (price_high - price_low) * (i + 1)
+    distance_above = 0.07 * (price_high - price_low) * (i + 1)
+    lower_band_line = ax.plot(x, y_fit - distance_below, alpha=0.8, linestyle='-', color=colors[i], linewidth=2, zorder=1)
+    upper_band_line = ax.plot(x, y_fit + distance_above, alpha=0.8, linestyle='-', color=colors[i + 4], linewidth=2, zorder=1)
 
-    # Add annotations for lower channel levels
-    annotations.append(
-        go.layout.Annotation(
-            x=x[-1],
-            y=lower_channel,
-            text=f"Buy Area {i+1}",
-            showarrow=False,
-            font=dict(color=lower_channel_colors[i], size=12)
-        )
-    )
+# Plot the original BTC price data with reduced line width
+price_plot, = ax.plot(x, y, label='BTC Price', color='black', zorder=2, linewidth=0.75)
 
-    # Add annotations for upper channel levels
-    annotations.append(
-        go.layout.Annotation(
-            x=x[-1],
-            y=upper_channel,
-            text=f"Take Profit Area {i+1}",
-            showarrow=False,
-            font=dict(color=upper_channel_colors[i], size=12)
-        )
-    )
+# Plot the polynomial regression curve behind the price line
+regression_plot = ax.plot(x, y_fit, color='red', linestyle='-', linewidth=2, label='Smoothed Polynomial Regression Curve', zorder=1)
 
-# Create the layout
-layout = go.Layout(
-    title='Bitcoin HISTORICAL BUY & TAKE PROFIT LEVELS',
-    xaxis_title='Date',
-    yaxis_title='Price (USD)',
-    yaxis_tickformat='${:,.2f}',
-    xaxis_type='date',
-    xaxis_rangeslider_visible=False,
-    xaxis_zerolinewidth=1,
-    yaxis_zerolinewidth=1,
-    xaxis_showgrid=True,
-    yaxis_showgrid=True,
-    xaxis_gridwidth=1,
-    yaxis_gridwidth=1,
-    xaxis_gridcolor='lightgray',
-    yaxis_gridcolor='lightgray',
-    legend=dict(
-        bgcolor='rgba(255, 255, 255, 0.5)',
-        bordercolor='grey',
-        borderwidth=1,
-        x=0.01,
-        y=0.99,
-        orientation="v",
-        font=dict(
-            size=12
-        ),
-        traceorder="normal"
-    ),
-    margin=dict(l=50, r=50, t=50, b=50),
-    dragmode='zoom',  # Set the dragmode to 'zoom'
-    xaxis_fixedrange=False,
-    yaxis_fixedrange=False,
-    annotations=annotations
-)
+# Format y-axis tick labels based on the magnitude of the value
+if price_high > 0.01:
+    ax.yaxis.set_major_formatter('${x:,.2f}')  # Use whole value number and 2 decimal places to the left of the decimal
+    ax.yaxis.set_major_locator(MultipleLocator(5000))  # Set y-axis price interval to the nearest 500
+else:
+    ax.yaxis.set_major_formatter('${x:,.2f}')  # Use all place values to the right of the decimal for price
 
-# Create the figure and save it as an HTML file
-fig = go.Figure(data=[trace1, trace2, *additional_traces], layout=layout)
+plt.title('Bitcoin HISTORICAL BUY & TAKE PROFIT LEVELS', fontsize=12, fontweight='bold', ha='center')
+plt.xlabel('Date')
+plt.ylabel('Price (USD)')
 
-# Add the trend line
-fig.add_trace(
-    go.Scatter(
-        x=x,
-        y=y_fit,
-        mode='lines',
-        name='Trend Line',
-        line={'color': 'blue', 'width': 2, 'dash': 'dash'}
-    )
-)
+# Move the legend to the upper left corner
+ax.legend(loc='upper left')
 
-fig.update_layout(
-    title_font_size=20,
-    xaxis_title_font_size=16,
-    yaxis_title_font_size=16,
-    dragmode='zoom',  # Set the dragmode to 'zoom'
-    xaxis_rangeslider_visible=False
-)
+# Customize the x-axis to display dates
+ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
+plt.xticks(rotation=45)
 
+# Enable freehand drawing with LassoSelector
+lasso = LassoSelector(ax, onselect=None)
+
+# Function to handle drawing selection
+def onselect(verts):
+    print(f"Selected vertices: {verts}")  # Process the selected vertices as needed
+
+# Connect the freehand drawing function
+lasso.onselect = onselect
+
+# Function to tether the comment container to the price line (with dollar sign added)
+mplcursors.cursor(price_plot, hover=True).connect("add", lambda sel: sel.annotation.set_text(
+    f'Price: ${sel.target[1]:.10f}\nDate: {mdates.num2date(sel.target[0]).strftime("%Y-%m-%d")}'))
+
+# Display the plot
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+
+
+# Save the plot as an HTML file
 fig.write_html('index.html')
+
+# Display a message indicating successful file creation
+print("HTML file 'index.html' has been created.")
