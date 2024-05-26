@@ -1,0 +1,24 @@
+name: Daily Update
+
+on:
+  schedule:
+    - cron: '0 21 * * *'  # Run daily at 9 PM UTC (5 PM New York time)
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.x
+
+      - name: Install Dependencies
+        run: pip install yahoo_fin plotly
+
+      - name: Update Data
+        run: |
+          python update_data.py
