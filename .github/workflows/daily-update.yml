@@ -3,7 +3,7 @@ name: Daily Update
 on:
   schedule:
    # - cron: '0 21 * * *'  # Run daily at 9 PM UTC (5 PM New York time)
-    - cron: 0 12 * * *  # 11:30 AM UTC = 7:30 AM EST
+    - cron: 15 12 * * *  # 11:30 AM UTC = 7:30 AM EST
 
 jobs:
   update-data:
