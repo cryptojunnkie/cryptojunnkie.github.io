@@ -3,7 +3,7 @@ name: Daily Update
 on:
   schedule:
     - cron: '0 21 * * *'  # Run daily at 9 PM UTC (5 PM New York time)
-    - cron: 15 12 * * *  # 12:15 AM UTC = 7:30 AM (8:15 AM New York time)
+    - cron: 40 13 * * *  # 12:15 AM UTC = 7:30 AM (8:15 AM New York time)
 
 jobs:
   update-data:
@@ -11,6 +11,8 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3  # Update from v2 to v3
+        with:
+          node-version: 20
 
       - name: Set up Python
         uses: actions/setup-python@v4  # Update from v2 to v4
