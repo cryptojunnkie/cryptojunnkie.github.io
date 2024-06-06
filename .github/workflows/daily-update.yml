@@ -3,17 +3,17 @@ name: Daily Update
 on:
   schedule:
    # - cron: '0 21 * * *'  # Run daily at 9 PM UTC (5 PM New York time)
-    - cron: 30 11 * * *  # 11:30 AM UTC = 7:30 AM EST
+    - cron: 0 12 * * *  # 11:30 AM UTC = 7:30 AM EST
 
 jobs:
   update-data:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3  # Update from v2 to v3
 
       - name: Set up Python
-        uses: actions/setup-python@v2  # Update to a specific version if needed
+        uses: actions/setup-python@v4  # Update from v2 to v4
         with:
           python-version: 3.8  # Specify the exact Python version here
 
